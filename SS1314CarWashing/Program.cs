@@ -9,7 +9,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         //Connection String
-        var conString = @"Server=10.10.10.49;Database=SS13CarWashing;User Id=sa;Password=Strong.Pwd-123;TrustServerCertificate=true;";
+        var conString = @"Server=10.8.8.11;Database=SS13CarWashing;User Id=sa;Password=Strong.Pwd-123;TrustServerCertificate=true;";
         builder.Services.AddDbContext<AppDbContext>
             (o=>o.UseSqlServer(conString));
        
