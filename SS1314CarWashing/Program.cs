@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SS1314CarWashing.Models;
+using SS1314CarWashing.Services;
 
 namespace SS1314CarWashing;
 
@@ -9,10 +10,11 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         //Connection String
-        var conString = @"Server=10.8.8.11;Database=SS13CarWashing;User Id=sa;Password=Strong.Pwd-123;TrustServerCertificate=true;";
+        var conString = @"Server=10.8.8.22;Database=SS13CarWashing;User Id=sa;Password=Strong.Pwd-123;TrustServerCertificate=true;";
         builder.Services.AddDbContext<AppDbContext>
             (o=>o.UseSqlServer(conString));
-       
+       //DI
+       builder.Services.AddTransient<IItemService,ItemService>();
         // Add services to the container.
         builder.Services.AddControllersWithViews();
 
