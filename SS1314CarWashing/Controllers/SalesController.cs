@@ -24,7 +24,8 @@ public class SalesController : Controller
         var appDbContext = _context.Sale.Include(s => s.Customer);
         return View(await appDbContext.ToListAsync());
     }
-
+    public async Task<JsonResult> GetProductByCategory(Guid Id)
+        => Json(await _context.Item.Where(x => x.ItemTypeId.Equals(Id)).ToListAsync());
     // GET: Sales/Details/5
     public async Task<IActionResult> Details(Guid? id)
     {
