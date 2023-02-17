@@ -57,12 +57,30 @@ public class SalesController : Controller
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("SaleId,CustomerId,IssueDate,InvoiceNumber,Total,Discount,GrandTotal")] Sale sale)
+    //[ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Sale sale)
     {
         if (ModelState.IsValid)
         {
-            sale.SaleId = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            if(sale.SaleDetails is not null)
+            {
+                for(int i = 0; i < sale.SaleDetails.Count; i++)
+                {
+                    sale.SaleDetails[i].SaleId=id;
+                    sale.SaleDetails[i].SaleDetailId = Guid.NewGuid();
+                    var item = sale.SaleDetails[i];
+                    //Reduce Stock
+                    var product = _context.Item.Where(x => x.ItemId == item.ItemId && x.IsStock==true).FirstOrDefault();
+                    if(product is not null)
+                    {
+                        _context.Item.Attach(product);
+                        product.Qty -= item.Qty;
+                    }
+                }
+            }
+            sale.SaleId = id;
+            sale.InvoiceNumber = DateTime.Now.ToString("yyyyMMddHHmmssff");
             _context.Add(sale);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

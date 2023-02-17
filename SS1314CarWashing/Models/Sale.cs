@@ -20,4 +20,5 @@ public class Sale
     public double GrandTotal { get; set; }
 
     public Customer Customer { get; set; }
+    public List<SaleDetail> SaleDetails { get; set; }
 }

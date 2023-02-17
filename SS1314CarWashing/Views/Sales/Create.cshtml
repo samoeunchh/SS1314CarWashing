@@ -65,7 +65,7 @@
                 <span asp-validation-for="GrandTotal" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" id="save" value="Create" class="btn btn-primary" />
             </div>
     </div>
 </div>
@@ -77,8 +77,48 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function(){
+            $("#save").click(function(){
+                var saledetails =[];
+                var i=0;
+                $("#saleList > tbody > tr").each(function(){
+                    var id = document.getElementsByName("itemId[]")[i].value;
+                    var price = $(this).closest("tr").find("td:eq(1)").text();
+                    var qty = $(this).closest("tr").find("td:eq(2)").text();
+                    var amount = $(this).closest("tr").find("td:eq(3)").text();
+                    saledetails.push({"ItemId":id,"Price":price,"Qty":qty,"Amount":amount});
+                    i++;
+                });
+                var sale ={
+                    CustomerId:$("#CustomerId").val(),
+                    IssueDate: $("#IssueDate").val(),
+                    Total: $("#Total").val(),
+                    Discount : $("#Discount").val(),
+                    GrandTotal: $("#GrandTotal").val(),
+                        SaleDetails: saledetails
+                };
+               $.ajax({
+                   method:"POST",
+                   url:"/Sales/Create",
+                   dataType:"json",
+                   data:sale,
+                   success:function(data){
+                       console.log(data);
+                   },error:function(error){
+                       console.log(error);
+                   }
+               });
+            });
            $("#Discount").blur(function(){
                CalTotal();
+           });
+           $("#saleList").on("click",".remove",function(){
+              var qty = $(this).closest("tr").find("td:eq(2)").text();
+              if(Number(qty)<=1){
+                   $(this).closest("tr").remove();
+              }else{
+                  $(this).closest("tr").find("td:eq(2)").text(Number(qty) - 1);
+              }
+              CalTotal();
            });
         });
         function GetProductByCategory(id){
@@ -104,7 +144,10 @@
             var Discount=0;
             var GrandTotal=0;
              $("#saleList > tbody > tr").each(function(){
-                 var amount =  $(this).closest("tr").find("td:eq(3)").text();
+                 var price =  $(this).closest("tr").find("td:eq(1)").text();
+                 var qty =  $(this).closest("tr").find("td:eq(2)").text();
+                 $(this).closest("tr").find("td:eq(3)").text(Number(qty) * Number(price));
+                     var amount =  $(this).closest("tr").find("td:eq(3)").text();
                  Total += Number(amount);
              });
              Discount = $("#Discount").val();
@@ -118,19 +161,17 @@
                var itemName = $(this).closest("tr").find("td:eq(0)").text();
                if(itemName == Name){
                     var qty =  $(this).closest("tr").find("td:eq(2)").text();
-                    var price =  $(this).closest("tr").find("td:eq(1)").text();
                     $(this).closest("tr").find("td:eq(2)").text(Number(qty) + 1);
-                    $(this).closest("tr").find("td:eq(3)").text((Number(qty) + 1) * Number(price));
                     b=true;
                     CalTotal();
                }
            });
            if(b==false){
-               var row ="<tr><td>"+ Name;
+               var row ="<tr><td><input hidden value='"+ Id +"' name='itemId[]'/>"+ Name;
                row += "</td><td>"+ Price;
                row += "</td><td>1";
                row += "</td><td>"+ Price;
-               row += "</td><td></td></tr>";
+               row += "</td><td><button class='btn btn-warning remove'>-</button></td></tr>";
                $("#saleList").append(row);
                CalTotal();
            }
