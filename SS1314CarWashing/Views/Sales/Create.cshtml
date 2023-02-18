@@ -69,9 +69,6 @@
             </div>
     </div>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -98,11 +95,10 @@
                 };
                $.ajax({
                    method:"POST",
-                   url:"/Sales/Create",
-                   dataType:"json",
                    data:sale,
+                   dataType:"json",
                    success:function(data){
-                       console.log(data);
+                      window.location.href="/Sales/Print/?Id="+ data;
                    },error:function(error){
                        console.log(error);
                    }

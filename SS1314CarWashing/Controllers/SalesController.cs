@@ -52,7 +52,37 @@ public class SalesController : Controller
         ViewData["ItemTypes"] = await _context.ItemType.ToListAsync();
         return View();
     }
-
+    public async Task<IActionResult> Print(Guid Id)
+    {
+        var saleDetails =await (from sd in _context.SaleDetail
+                                join i in _context.Item on sd.ItemId equals i.ItemId
+                           where sd.SaleId.Equals(Id)
+                           select new SaleDetailDTO
+                           {
+                               ItemName=i.ItemName,
+                               SaleDetailId=sd.SaleDetailId,
+                               SaleId=sd.SaleId,
+                               Amount=sd.Amount,
+                               Price=sd.Price,
+                               Qty=sd.Qty
+                           }).ToListAsync();
+        var sale = await (from s in _context.Sale
+                          join c in _context.Customer
+                          on s.CustomerId equals c.CustomerId
+                          where s.SaleId == Id
+                          select new SaleDTO
+                          {
+                              SaleId = s.SaleId,
+                              CustomerName = c.CustomerName,
+                              Total = s.Total,
+                              GrandTotal = s.GrandTotal,
+                              Discount = s.Discount,
+                              IssueDate = s.IssueDate,
+                              InvoiceNumber = s.InvoiceNumber,
+                              SaleDetails = saleDetails
+                          }).FirstOrDefaultAsync();
+        return View(sale);
+    }
     // POST: Sales/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -83,9 +113,10 @@ public class SalesController : Controller
             sale.InvoiceNumber = DateTime.Now.ToString("yyyyMMddHHmmssff");
             _context.Add(sale);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok(id);
         }
         ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "PhoneNumber", sale.CustomerId);
+        ViewData["ItemTypes"] = await _context.ItemType.ToListAsync();
         return View(sale);
     }
 
