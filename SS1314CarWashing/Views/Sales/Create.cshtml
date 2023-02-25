@@ -74,6 +74,8 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function(){
+            var currentDate = new Date();
+            $("#IssueDate").val(moment(currentDate).format('YYYY-MM-DD'));
             $("#save").click(function(){
                 var saledetails =[];
                 var i=0;

@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="container">
+    <div class="row noprint">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                         <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-lable">From Date</label>
+                            <input class="form-control" type="date" id="FromDate"/>
+                        </div>
+                    </div>
+                     <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-lable">To Date</label>
+                            <input class="form-control" type="date" id="ToDate"/>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <br/>
+                        <button class="btn btn-primary">View</button>
+                        <button class="btn btn-primary" id="print">Print</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>InvoiceNumber</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Discount</th>
+                        <th>Grand Total</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3"></th>
+                        <th>0$</th>
+                        <th>0%</th>
+                        <th>0$</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+       $(document).ready(function(){
+           $("#print").click(function(){
+               window.print();
+           });
+       });
+    </script>
+}
+
